@@ -16,8 +16,7 @@ import {
   Search as SearchIcon,
   ShoppingCart as CartIcon,
   Menu as MenuIcon,
-  Person as PersonIcon,
-  Favorite as FavoriteIcon,
+  Download as DownloadIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import ApiService from '@/services/api';
@@ -31,6 +30,7 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
+  const [isDownloading, setIsDownloading] = useState(false);
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +53,19 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
         // Still navigate to products page even if API call fails
         navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
       }
+    }
+  };
+
+  const handleDownloadReport = async () => {
+    try {
+      setIsDownloading(true);
+      const apiService = new ApiService();
+      await apiService.downloadStatisticsReport();
+    } catch (error) {
+      console.error('Failed to download report:', error);
+      // You could add a toast notification here
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -118,23 +131,29 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
             >
               Products
             </Button>
-            <IconButton color="inherit">
-              <FavoriteIcon />
-            </IconButton>
-            <IconButton color="inherit">
-              <PersonIcon />
-            </IconButton>
-            <IconButton color="inherit" onClick={onCartClick}>
-              <Badge badgeContent={2} color="secondary">
-                <CartIcon />
-              </Badge>
-            </IconButton>
+            <Button
+              color="inherit"
+              onClick={handleDownloadReport}
+              disabled={isDownloading}
+              startIcon={<DownloadIcon />}
+              sx={{ textTransform: 'none' }}
+            >
+              {isDownloading ? 'Downloading...' : 'Download Report'}
+            </Button>
           </Box>
         )}
 
-        {/* Mobile Menu Button */}
+        {/* Mobile Navigation */}
         {isMobile && (
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <IconButton 
+              color="inherit" 
+              onClick={handleDownloadReport}
+              disabled={isDownloading}
+              title="Download Report"
+            >
+              <DownloadIcon />
+            </IconButton>
             <IconButton color="inherit" onClick={onCartClick}>
               <Badge badgeContent={2} color="secondary">
                 <CartIcon />
