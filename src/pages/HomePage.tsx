@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   Box,
   Container,
@@ -6,18 +6,23 @@ import {
   Button,
   Card,
   CardContent,
+  CardMedia,
 } from '@mui/material';
 import { ArrowForward as ArrowForwardIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import HeroCarousel from '../components/HeroCarousel';
+import ApiService from '@/services/api';
+import { LatestProduct } from '../types';
+import { setProductDetail } from '@/store/slices/productDetailSlice';
 
 const HomePage: React.FC = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  // Mock data for demonstration
-  const featuredCategories = [
-    'Electronics', 'Clothing', 'Home & Garden', 'Sports', 'Books', 'Toys'
-  ];
+
+  const [latestProducts, setLatestProducts] = useState<LatestProduct[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const features = [
     {
@@ -37,12 +42,41 @@ const HomePage: React.FC = () => {
     }
   ];
 
+  useEffect(() => {
+    console.log("useEffect")
+    fetchLatestProducts();
+  },[])
+
+  const fetchLatestProducts = async() => {
+    try {
+      console.log("fetchLatestProducts")
+      const ProductService = new ApiService()
+      const result = await ProductService.getLatestProducts(10) // Get 8 latest products
+      setLatestProducts(result.products)
+      console.log("Latest Products:", result.products)
+    } catch (error) {
+      console.error("Error fetching latest products:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleProductClick = async (id: string) => {
+    const ProductService = new ApiService();
+    console.log("Product:", id)
+    const result = await ProductService.getProduct(id)
+    console.log("Product:", result)
+    dispatch(setProductDetail(result));
+    navigate(`/product/${id}`)
+  }
+
+
   return (
     <Box>
       {/* Hero Carousel */}
       <HeroCarousel />
 
-      {/* Categories Section */}
+      {/* Latest Products Section */}
       <Container maxWidth="lg" sx={{ py: 6 }}>
         <Typography
           variant="h4"
@@ -50,34 +84,132 @@ const HomePage: React.FC = () => {
           gutterBottom
           sx={{ textAlign: 'center', mb: 4, fontWeight: 600 }}
         >
-          Shop by Category
+          Latest Products
         </Typography>
-        <Box sx={{ 
-          display: 'grid', 
-          gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)', md: 'repeat(6, 1fr)' },
-          gap: 3 
-        }}>
-          {featuredCategories.map((category) => (
-            <Card
-              key={category}
+        {loading ? (
+          <Box sx={{ textAlign: 'center', py: 4 }}>
+            <Typography>Loading latest products...</Typography>
+          </Box>
+        ) : (
+          <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' },
+            gap: 3
+          }}>
+            {latestProducts.map((product) => (
+              <Card
+                key={product['internal_id']}
+                sx={{
+                  height: 320,
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  transition: 'transform 0.2s ease-in-out',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                  },
+                }}
+              >
+                <Box sx={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: 200,
+                  width: '100%',
+                  bgcolor: '#f5f7fa',
+                  borderTopLeftRadius: 8,
+                  borderTopRightRadius: 8,
+                  borderBottom: '1px solid #f0f0f0',
+                  overflow: 'hidden',
+                }}>
+                  <CardMedia
+                    component="img"
+                    sx={{
+                      maxHeight: 160,
+                      width: 'auto',
+                      objectFit: 'contain',
+                      m: 'auto',
+                      cursor: 'pointer',
+                    }}
+                    image={product['image']}
+                    alt={product['name']}
+                    loading="lazy"
+                    onClick={() => handleProductClick(product['internal_id'])}
+                  />
+                </Box>
+                <CardContent sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column', p: 0 }}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 600,
+                      mb: 1,
+                      fontSize: '0.9rem',
+                      minHeight: 40,
+                      maxHeight: 50,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      display: '-webkit-box',
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: 'vertical',
+                      whiteSpace: 'normal',
+                      textAlign: 'center',
+                      pt: 1,
+                      pb: 1,
+                      pl: 1.5,
+                      pr: 1.5,
+                    }}
+                  >
+                    {product['name']}
+                  </Typography>
+                  <Typography
+                    variant="subtitle2"
+                    sx={{
+                      color: 'text.secondary',
+                      fontWeight: 500,
+                      fontSize: '0.8rem',
+                      textAlign: 'left',
+                      pl: 1,
+                      pr: 2,
+                      mb: 0.5,
+                    }}
+                  >
+                    {product['category']}
+                  </Typography>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '10px', paddingRight: '10px' }}>
+                    <Typography variant="h6" color="primary" sx={{ fontWeight: 700, fontSize: '0.9rem' }}>
+                      ${product.price}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      size="small"
+                      sx={{ textTransform: 'none'}}
+                    >
+                      Add to Cart
+                    </Button>
+                  </Box>
+                </CardContent>
+              </Card>
+            ))}
+          </Box>
+        )}
+        {!loading && latestProducts.length > 0 && (
+          <Box sx={{ textAlign: 'center', mt: 4 }}>
+            <Button
+              variant="outlined"
+              size="large"
+              onClick={() => navigate('/products')}
+              endIcon={<ArrowForwardIcon />}
               sx={{
-                textAlign: 'center',
-                cursor: 'pointer',
-                transition: 'transform 0.2s ease-in-out',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                },
+                textTransform: 'none',
+                fontWeight: 600,
+                px: 4,
+                py: 1.5,
               }}
-              onClick={() => navigate(`/products?category=${encodeURIComponent(category)}`)}
             >
-              <CardContent sx={{ py: 3 }}>
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  {category}
-                </Typography>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
+              View All Products
+            </Button>
+          </Box>
+        )}
       </Container>
 
       {/* Features Section */}
@@ -91,10 +223,10 @@ const HomePage: React.FC = () => {
           >
             Why Choose ShopHub?
           </Typography>
-          <Box sx={{ 
-            display: 'grid', 
+          <Box sx={{
+            display: 'grid',
             gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
-            gap: 4 
+            gap: 4
           }}>
             {features.map((feature, index) => (
               <Box key={index} sx={{ textAlign: 'center' }}>

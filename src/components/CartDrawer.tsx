@@ -3,7 +3,6 @@ import {
   Drawer,
   Box,
   Typography,
-  Button,
   IconButton,
   Divider,
 } from '@mui/material';

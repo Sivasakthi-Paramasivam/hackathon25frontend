@@ -1,250 +1,207 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Box,
   Container,
   Typography,
   Button,
   Card,
-  CardContent,
   Chip,
-  TextField,
 } from '@mui/material';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import StarIcon from '@mui/icons-material/Star';
 
-// Mock product data
-const mockProduct = {
-  'Internal ID': 'product-1',
-  'Product Name': 'Premium Wireless Headphones',
-  'Product Description': 'High-quality wireless headphones with noise cancellation, long battery life, and premium sound quality. Perfect for music lovers and professionals alike.',
-  'Product Category': 'Electronics',
-  'Product Price': 299.99,
-  'Product Image URL': 'https://picsum.photos/600/600?random=1',
-  'Product Brand': 'AudioTech Pro',
-  'Product Rating': '4.8',
-  'Product Reviews': 1247,
-  'Product Stock': 45,
-  'Product SKU': 'ATH-WH001',
-  'Product Weight': 0.25,
-  'Product Dimensions': '18 x 8 x 4 cm',
-  'Product Color': 'Black',
-  'Product Material': 'Premium Plastic & Metal',
-  'Product Warranty': '2 Years',
-  'Product Shipping': 'Free Shipping',
-  'Product Return Policy': '30 Days Return',
-  'Product Tags': ['Wireless', 'Noise Cancelling', 'Bluetooth', 'Premium'],
-  'Product Features': [
-    'Active Noise Cancellation',
-    '40-hour battery life',
-    'Bluetooth 5.0',
-    'Premium audio drivers',
-    'Touch controls',
-    'Voice assistant support'
-  ],
-  'Product Specifications': {
-    'Driver Size': '40mm',
-    'Frequency Response': '20Hz - 20kHz',
-    'Impedance': '32 ohms',
-    'Sensitivity': '100dB',
-    'Battery Life': '40 hours',
-    'Charging Time': '2 hours'
-  }
-};
 
 const ProductDetailPage: React.FC = () => {
-  const [quantity, setQuantity] = useState(1);
+  // const [quantity, setQuantity] = useState(1);
 
-  const product = mockProduct; // In real app, fetch by ID
+  const product = useSelector((state: RootState) => state.productDetail.product);
 
-  const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(event.target.value);
-    if (value > 0 && value <= product['Product Stock']) {
-      setQuantity(value);
-    }
-  };
+  // const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const value = parseInt(event.target.value);
+  //   if (value > 0 && product && value <= product.Stock) {
+  //     setQuantity(value);
+  //   }
+  // };
 
   const handleAddToCart = () => {
     // Add to cart logic
-    console.log('Adding to cart:', { product, quantity });
+    if (product) {
+      console.log('Adding to cart:', { product });
+    }
   };
+
+  if (!product) {
+    return (
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Typography variant="h5" align="center">Loading product details...</Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 4 }}>
-        {/* Product Images */}
-        <Box>
-          <Card>
+      <Box sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        gap: 4,
+        alignItems: 'flex-start',
+        background: '#f1f3f6',
+        borderRadius: 2,
+        p: { xs: 1, md: 3 },
+        boxShadow: 1,
+      }}>
+        {/* Product Images and Main Actions */}
+        <Box sx={{ flex: '0 0 400px', width: { xs: '100%', md: 400 }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <Card sx={{ p: 3, background: '#fff', borderRadius: 2, boxShadow: 2, minWidth: 320, minHeight: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Box
               component="img"
-              src={product['Product Image URL']}
-              alt={product['Product Name']}
+              src={product.Image}
+              alt={product.Name}
               sx={{
                 width: '100%',
+                maxWidth: 320,
                 height: 'auto',
-                borderRadius: 1,
+                borderRadius: 2,
+                objectFit: 'contain',
+                background: '#f7f7f7',
+                p: 2,
               }}
               loading="lazy"
             />
           </Card>
+          {/* Add vertical space between image and buttons */}
+          <Box sx={{ height: 24 }} />
+          {/* Quantity and Add to Cart/Buy Now (now directly below product name) */}
+          <Box sx={{ mb: 2, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', gap: 2, maxWidth: 320, width: '100%', mx: 'auto', justifyContent: 'center' }}>
+            {/* <TextField
+              type="number"
+              label="Quantity"
+              value={quantity}
+              onChange={handleQuantityChange}
+              inputProps={{ min: 1, max: product.Stock }}
+              sx={{ width: 100, background: '#f7f7f7', borderRadius: 1 }}
+              size="small"
+            /> */}
+            <Button
+              variant="contained"
+              size="large"
+              onClick={handleAddToCart}
+              disabled={product.Stock === 0}
+              sx={{
+                textTransform: 'none',
+                fontWeight: 700,
+                background: '#ff9f00',
+                color: '#fff',
+                boxShadow: 2,
+                '&:hover': { background: '#fb641b' },
+                px: 4,
+                py: 1.5,
+                borderRadius: 1.5,
+                minWidth: 160,
+                height: 48,
+              }}
+            >
+              Add to Cart
+            </Button>
+            <Button
+              variant="contained"
+              size="large"
+              sx={{
+                textTransform: 'none',
+                fontWeight: 700,
+                background: '#fb641b',
+                color: '#fff',
+                boxShadow: 2,
+                '&:hover': { background: '#ff9f00' },
+                px: 4,
+                py: 1.5,
+                borderRadius: 1.5,
+                minWidth: 160,
+                height: 48,
+              }}
+            >
+              Buy Now
+            </Button>
+          </Box>
         </Box>
 
         {/* Product Info */}
-        <Box>
-          <Box>
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: 700 }}>
-              {product['Product Name']}
+        <Box sx={{ flex: 1, background: '#fff', borderRadius: 2, p: 3, boxShadow: 2 }}>
+          {/* Product Name above Ratings */}
+          <Typography variant="h5" sx={{ fontWeight: 700, color: '#212121', mb: 1, textAlign: 'left' }}>
+            {product.Name}
+          </Typography>
+          {/* Price above Ratings */}
+          <Typography variant="h6" sx={{ fontWeight: 700, color: '#388e3c', mb: 1, textAlign: 'left' }}>
+            Price: ${product.Price}
+          </Typography>
+          {/* Ratings and Name */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+            <Box sx={{ background: '#388e3c', color: '#fff', px: 1, borderRadius: 1, fontWeight: 700, display: 'flex', alignItems: 'center', fontSize: 16 }}>
+              4.3 <StarIcon sx={{ fontSize: 16, ml: 0.2 }} />
+            </Box>
+            <Typography variant="body2" color="text.secondary">(1,234 ratings & 234 reviews)</Typography>
+          </Box>
+
+          {/* Stock Status and Availability */}
+          <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, color: product.Stock > 0 ? '#388e3c' : '#d32f2f' }}>
+              {product.Stock > 0
+                ? `In Stock (${product.Stock} available)`
+                : 'Out of Stock'
+              }
             </Typography>
-            
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-              <Typography variant="h5" color="primary" sx={{ fontWeight: 700 }}>
-                ${product['Product Price']}
-              </Typography>
-              <Chip label={product['Product Category']} color="primary" variant="outlined" />
-            </Box>
+            <Chip
+              label={product.Availability === 'pre_order' ? 'Pre-Order' : product.Availability}
+              color={product.Availability === 'pre_order' ? 'warning' : 'success'}
+              size="small"
+            />
+          </Box>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <Typography variant="body1" color="text.secondary">
-                ⭐ {product['Product Rating']}
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                ({product['Product Reviews']} reviews)
-              </Typography>
-            </Box>
-
-            <Typography variant="body1" sx={{ mb: 3, lineHeight: 1.6 }}>
-              {product['Product Description']}
+          {/* Description in Table */}
+          <Box sx={{ mb: 3, p: 2, border: '1px solid #eee', borderRadius: 2, background: '#fafbfc' }}>
+            <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600, color: '#2874f0' }}>
+              Product Details
             </Typography>
-
-            {/* Product Tags */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                Tags:
-              </Typography>
-              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                {product['Product Tags'].map((tag) => (
-                  <Chip key={tag} label={tag} size="small" variant="outlined" />
-                ))}
-              </Box>
-            </Box>
-
-            {/* Stock Status */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="body2" color={product['Product Stock'] > 0 ? 'success.main' : 'error.main'}>
-                {product['Product Stock'] > 0 
-                  ? `In Stock (${product['Product Stock']} available)`
-                  : 'Out of Stock'
-                }
-              </Typography>
-            </Box>
-
-            {/* Quantity and Add to Cart */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                Quantity:
-              </Typography>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <TextField
-                  type="number"
-                  value={quantity}
-                  onChange={handleQuantityChange}
-                  inputProps={{ min: 1, max: product['Product Stock'] }}
-                  sx={{ width: 100 }}
-                />
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={handleAddToCart}
-                  disabled={product['Product Stock'] === 0}
-                  sx={{ textTransform: 'none', fontWeight: 600 }}
-                >
-                  Add to Cart
-                </Button>
-              </Box>
-            </Box>
-
-            {/* Product Details */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                Product Details:
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <Typography variant="body2">
-                  <strong>Brand:</strong> {product['Product Brand']}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>SKU:</strong> {product['Product SKU']}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Color:</strong> {product['Product Color']}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Material:</strong> {product['Product Material']}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Weight:</strong> {product['Product Weight']} kg
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Dimensions:</strong> {product['Product Dimensions']}
-                </Typography>
-              </Box>
-            </Box>
-
-            {/* Shipping & Returns */}
-            <Box sx={{ mb: 3 }}>
-              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-                Shipping & Returns:
-              </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <Typography variant="body2">
-                  <strong>Shipping:</strong> {product['Product Shipping']}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Warranty:</strong> {product['Product Warranty']}
-                </Typography>
-                <Typography variant="body2">
-                  <strong>Return Policy:</strong> {product['Product Return Policy']}
-                </Typography>
-              </Box>
+            <Box sx={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', background: '#fff' }}>
+                <tbody>
+                  <tr>
+                    <td style={{ fontWeight: 600, padding: '8px', border: '1px solid #eee', width: '180px', background: '#f7f7f7' }}>Brand</td>
+                    <td style={{ padding: '8px', border: '1px solid #eee' }}>{product.Brand}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 600, padding: '8px', border: '1px solid #eee', background: '#f7f7f7' }}>Color</td>
+                    <td style={{ padding: '8px', border: '1px solid #eee' }}>{product.Color}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 600, padding: '8px', border: '1px solid #eee', background: '#f7f7f7' }}>Size</td>
+                    <td style={{ padding: '8px', border: '1px solid #eee' }}>{product.Size}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 600, padding: '8px', border: '1px solid #eee', background: '#f7f7f7' }}>Availability</td>
+                    <td style={{ padding: '8px', border: '1px solid #eee' }}>{product.Availability}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 600, padding: '8px', border: '1px solid #eee', background: '#f7f7f7' }}>EAN</td>
+                    <td style={{ padding: '8px', border: '1px solid #eee' }}>{product.EAN}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 600, padding: '8px', border: '1px solid #eee', background: '#f7f7f7' }}>Short Description</td>
+                    <td style={{ padding: '8px', border: '1px solid #eee' }}>{product['Short Description']}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: 600, padding: '8px', border: '1px solid #eee', background: '#f7f7f7' }}>Description</td>
+                    <td style={{ padding: '8px', border: '1px solid #eee' }}>
+                      <span dangerouslySetInnerHTML={{ __html: product.Description }} />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
             </Box>
           </Box>
         </Box>
-      </Box>
-
-      {/* Features Section */}
-      <Box sx={{ mt: 6 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
-          Features
-        </Typography>
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)' }, gap: 2 }}>
-          {product['Product Features'].map((feature, index) => (
-            <Card key={index}>
-              <CardContent>
-                <Typography variant="body1">• {feature}</Typography>
-              </CardContent>
-            </Card>
-          ))}
-        </Box>
-      </Box>
-
-      {/* Specifications */}
-      <Box sx={{ mt: 6 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600 }}>
-          Specifications
-        </Typography>
-        <Card>
-          <CardContent>
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2 }}>
-              {Object.entries(product['Product Specifications']).map(([key, value]) => (
-                <Box key={key} sx={{ display: 'flex', justifyContent: 'space-between', py: 1 }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {key}:
-                  </Typography>
-                  <Typography variant="body2">
-                    {value}
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </CardContent>
-        </Card>
       </Box>
     </Container>
   );

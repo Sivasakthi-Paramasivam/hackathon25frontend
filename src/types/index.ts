@@ -31,6 +31,25 @@ export interface Product {
   Currency: string;
   Stock: number;
   'Internal ID': string;
+  Image: string;
+  Description: string;
+  Color: string;
+  Size: string;
+  Availability: string;
+  EAN: string;
+  'Short Description': string;
+}
+
+export interface LatestProduct {
+  index: number,
+  name: string,
+  brand: string,
+  category: string,
+  price: number,
+  currency: string,
+  stock: number,
+  image: string,
+  internal_id: string,
 }
 
 export interface CartItem {
@@ -72,6 +91,10 @@ export interface SearchFilters {
   rating?: number;
   sortBy?: 'price' | 'name' | 'rating' | 'reviews';
   sortOrder?: 'asc' | 'desc';
+}
+
+export interface LatestProductsResponse {
+  products: LatestProduct[];
 }
 
 export interface HeroSlide {

@@ -65,6 +65,7 @@ const AppContent: React.FC = () => {
     },
   });
 
+
   return (
     <ThemeProvider theme={muiTheme}>
       <CssBaseline />
@@ -88,9 +89,9 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <Provider store={store}>
-      <AppContent />
-    </Provider>
+      <Provider store={store}>
+        <AppContent />
+      </Provider>
   );
 };
 

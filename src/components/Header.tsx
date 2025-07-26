@@ -20,6 +20,7 @@ import {
   Favorite as FavoriteIcon,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import ApiService from '@/services/api';
 
 interface HeaderProps {
   onCartClick: () => void;
@@ -31,10 +32,30 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      try {
+        // Convert search query to product index (assuming it's a number)
+        const query = parseInt(searchQuery.trim());
+        
+        if (isNaN(query)) {
+          console.log("Invalid product index, please enter a number");
+          return;
+        }
+        
+        console.log("Searching for product index:", );
+        const apiService = new ApiService();
+        const searchResults = await apiService.searchProducts(query, 1, 10);
+        console.log('Search results:', searchResults);
+        
+        // Navigate to products page with search results
+        navigate(`/products?search=${query}`);
+      } catch (error) {
+        console.error('Search error:', error);
+        // Still navigate to products page even if API call fails
+        navigate(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+      }
     }
   };
 
@@ -73,7 +94,7 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
           }}
         >
           <InputBase
-            placeholder="Search products..."
+            placeholder="Enter product index..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             sx={{
