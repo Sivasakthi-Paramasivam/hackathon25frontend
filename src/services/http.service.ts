@@ -37,15 +37,10 @@ export class HttpService {
       url: path,
       headers: headers,
     };
-    console.log("Request Config:", config);
     if(params) config.params = params;
-    console.log("Request params:", params);
     if(data) config.data = data;
-    console.log("Request Data:", data);
     try {
-      console.log("Sending request...",config);
       const response: AxiosResponse<T|ErrorResponseDTO> = await this.axiosInstance.request<T|ErrorResponseDTO>(config);
-      console.log("Response Config:", response);
       if(response.status < 200 || response.status >= 300) {
         throw this.parseErrorResponse(response);
       }

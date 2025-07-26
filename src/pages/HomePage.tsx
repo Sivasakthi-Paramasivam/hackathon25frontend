@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Container,
@@ -43,19 +43,15 @@ const HomePage: React.FC = () => {
   ];
 
   useEffect(() => {
-    console.log("useEffect")
     fetchLatestProducts();
   },[])
 
   const fetchLatestProducts = async() => {
     try {
-      console.log("fetchLatestProducts")
-      const ProductService = new ApiService()
+    const ProductService = new ApiService()
       const result = await ProductService.getLatestProducts(10) // Get 8 latest products
       setLatestProducts(result.products)
-      console.log("Latest Products:", result.products)
     } catch (error) {
-      console.error("Error fetching latest products:", error)
     } finally {
       setLoading(false)
     }
@@ -63,9 +59,7 @@ const HomePage: React.FC = () => {
 
   const handleProductClick = async (id: string) => {
     const ProductService = new ApiService();
-    console.log("Product:", id)
     const result = await ProductService.getProduct(id)
-    console.log("Product:", result)
     dispatch(setProductDetail(result));
     navigate(`/product/${id}`)
   }
@@ -91,24 +85,24 @@ const HomePage: React.FC = () => {
             <Typography>Loading latest products...</Typography>
           </Box>
         ) : (
-          <Box sx={{
-            display: 'grid',
+        <Box sx={{ 
+          display: 'grid', 
             gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', md: 'repeat(3, 1fr)', lg: 'repeat(4, 1fr)' },
-            gap: 3
-          }}>
+          gap: 3 
+        }}>
             {latestProducts.map((product) => (
-              <Card
-                key={product['internal_id']}
-                sx={{
+            <Card
+                key={product.internal_id}
+              sx={{
                   height: 320,
                   width: '100%',
                   display: 'flex',
                   flexDirection: 'column',
-                  transition: 'transform 0.2s ease-in-out',
-                  '&:hover': {
-                    transform: 'translateY(-4px)',
-                  },
-                }}
+                transition: 'transform 0.2s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                },
+              }}
               >
                 <Box sx={{
                   display: 'flex',
@@ -158,7 +152,7 @@ const HomePage: React.FC = () => {
                       pl: 1.5,
                       pr: 1.5,
                     }}
-                  >
+            >
                     {product['name']}
                   </Typography>
                   <Typography
@@ -178,7 +172,7 @@ const HomePage: React.FC = () => {
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '10px', paddingRight: '10px' }}>
                     <Typography variant="h6" color="primary" sx={{ fontWeight: 700, fontSize: '0.9rem' }}>
                       ${product.price}
-                    </Typography>
+                </Typography>
                     <Button
                       variant="contained"
                       size="small"
@@ -187,10 +181,10 @@ const HomePage: React.FC = () => {
                       Add to Cart
                     </Button>
                   </Box>
-                </CardContent>
-              </Card>
-            ))}
-          </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
         )}
         {!loading && latestProducts.length > 0 && (
           <Box sx={{ textAlign: 'center', mt: 4 }}>
@@ -223,10 +217,10 @@ const HomePage: React.FC = () => {
           >
             Why Choose ShopHub?
           </Typography>
-          <Box sx={{
-            display: 'grid',
+          <Box sx={{ 
+            display: 'grid', 
             gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' },
-            gap: 4
+            gap: 4 
           }}>
             {features.map((feature, index) => (
               <Box key={index} sx={{ textAlign: 'center' }}>

@@ -22,7 +22,6 @@ const ProductListPage: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [products, setProducts] = useState<Product[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [searchQuery, setSearchQuery] = useState<string>('');
   const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -44,10 +43,8 @@ const ProductListPage: React.FC = () => {
   useEffect(() => {
     const searchParam = searchParams.get('search');
     if (searchParam) {
-      setSearchQuery(searchParam);
       handleSearch(searchParam);
     } else {
-      console.log("fetchProducts")
       fetchProducts();
     }
   }, [searchParams]);
@@ -56,7 +53,6 @@ const ProductListPage: React.FC = () => {
     const ProductService = new ApiService()
     const result = await ProductService.getProducts()
     setProducts(result.products)
-    console.log("Products:",result)
   }
 
   const handleSearch = async (query: string) => {
@@ -65,14 +61,12 @@ const ProductListPage: React.FC = () => {
       const productIndex = parseInt(query);
       
       if (isNaN(productIndex)) {
-        console.log("Invalid product index");
         return;
       }
       
       const ProductService = new ApiService();
       const result = await ProductService.searchProducts(productIndex, 1, 10);
       setProducts(result.products);
-      console.log("Search results:", result);
     } catch (error) {
       console.error("Search error:", error);
     } finally {
@@ -82,37 +76,13 @@ const ProductListPage: React.FC = () => {
 
   const handleProductClick = async (id: string) => {
     const ProductService = new ApiService();
-    console.log("Product:",id)
     const result = await ProductService.getProduct(id)
-    console.log("Product:",result)
     dispatch(setProductDetail(result));
     navigate(`/product/${id}`)
   }
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-
-      {/* Search Results Header */}
-      {searchQuery && (
-        <Box sx={{ mb: 4 }}>
-          <Typography variant="h4" gutterBottom sx={{ fontWeight: 600 }}>
-            Search Results
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Showing results for product index: {searchQuery}
-          </Typography>
-          <Button 
-            variant="outlined" 
-            onClick={() => {
-              setSearchQuery('');
-              navigate('/products');
-            }}
-            sx={{ mt: 2 }}
-          >
-            Clear Search
-          </Button>
-        </Box>
-      )}
 
       {/* Loading State */}
       {isSearching && (
@@ -209,22 +179,6 @@ const ProductListPage: React.FC = () => {
               >
                 {product['Category']}
               </Typography>
-              {/* <Typography variant="body2" color="text.secondary" sx={{ mb: 2, flexGrow: 1 }}>
-                {product['Description'].substring(0, 100)}...
-              </Typography> */}
-              {/* <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                <Typography variant="body2" color="text.secondary">
-                  ⭐ {product['Product Rating']}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  ({product['Product Reviews']} reviews)
-                </Typography>
-              </Box> */}
-              {/* <Chip
-                label={product['Category']}
-                size="small"
-                sx={{ mb: 1, alignSelf: 'flex-start' }}
-              /> */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingLeft: '10px', paddingRight: '10px' }}>
                 <Typography variant="h6" color="primary" sx={{ fontWeight: 700, fontSize: '0.9rem' }}>
                   ${product.Price}

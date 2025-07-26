@@ -13,21 +13,13 @@ import StarIcon from '@mui/icons-material/Star';
 
 
 const ProductDetailPage: React.FC = () => {
-  // const [quantity, setQuantity] = useState(1);
 
   const product = useSelector((state: RootState) => state.productDetail.product);
 
-  // const handleQuantityChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const value = parseInt(event.target.value);
-  //   if (value > 0 && product && value <= product.Stock) {
-  //     setQuantity(value);
-  //   }
-  // };
 
   const handleAddToCart = () => {
     // Add to cart logic
     if (product) {
-      console.log('Adding to cart:', { product });
     }
   };
 
@@ -74,15 +66,6 @@ const ProductDetailPage: React.FC = () => {
           <Box sx={{ height: 24 }} />
           {/* Quantity and Add to Cart/Buy Now (now directly below product name) */}
           <Box sx={{ mb: 2, display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', gap: 2, maxWidth: 320, width: '100%', mx: 'auto', justifyContent: 'center' }}>
-            {/* <TextField
-              type="number"
-              label="Quantity"
-              value={quantity}
-              onChange={handleQuantityChange}
-              inputProps={{ min: 1, max: product.Stock }}
-              sx={{ width: 100, background: '#f7f7f7', borderRadius: 1 }}
-              size="small"
-            /> */}
             <Button
               variant="contained"
               size="large"

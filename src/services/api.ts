@@ -36,7 +36,6 @@ export class ApiService {
       ...(filters?.sortOrder && { sort_order: filters.sortOrder }),
     });
     const response = await this.httpService.get<undefined, ApiResponse<Product[]>>(`/products?${params}`);
-    console.log("Get Products:",response)
     return response;
   }
 

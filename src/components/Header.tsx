@@ -40,15 +40,12 @@ const Header: React.FC<HeaderProps> = ({ onCartClick }) => {
         const query = parseInt(searchQuery.trim());
         
         if (isNaN(query)) {
-          console.log("Invalid product index, please enter a number");
           return;
         }
         
-        console.log("Searching for product index:", );
         const apiService = new ApiService();
         const searchResults = await apiService.searchProducts(query, 1, 10);
-        console.log('Search results:', searchResults);
-        
+        console.log("Search results:", searchResults)
         // Navigate to products page with search results
         navigate(`/products?search=${query}`);
       } catch (error) {

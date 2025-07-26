@@ -1,159 +1,141 @@
-# Hackathon25 Frontend
+# E-commerce Frontend
 
-A modern React-based e-commerce frontend application built with TypeScript, Vite, and Material-UI.
+A modern React + TypeScript e-commerce frontend application with Flipkart-inspired design.
 
-## Features
+## 🚀 Quick Start
 
-- 🛍️ Product listing with search and filtering
-- 📱 Responsive design for all devices
-- 🎨 Modern UI with Material-UI components
-- ⚡ Fast performance with Vite
-- 🔄 Real-time API integration
-- 🚀 Production-ready deployment
+### Local Development
 
-## Tech Stack
+```bash
+# Install dependencies
+npm install
 
-- **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite
-- **UI Library**: Material-UI (MUI)
-- **State Management**: Redux Toolkit
-- **Routing**: React Router
-- **HTTP Client**: Axios
-- **Containerization**: Docker
-- **Web Server**: Nginx
+# Start development server
+npm run dev
 
-## Prerequisites
+# Build for production
+npm run build
 
-- Node.js 22.17.0 or higher
-- Docker and Docker Compose
-- Git
+# Preview production build
+npm run preview
+```
 
-## Local Development
+## 🐳 Docker Deployment
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd hackathon25frontend
-   ```
+### Prerequisites
+- Docker and Docker Compose installed
+- Backend API running on port 8000
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+### Local Docker Deployment
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env with your configuration
-   ```
+```bash
+# Build and run with Docker Compose
+docker-compose up --build
 
-4. **Start development server**
-   ```bash
-   npm run dev
-   ```
+# Access the application
+# Frontend: http://localhost:3000
+# Backend API: http://localhost:8000
+```
 
-5. **Build for production**
-   ```bash
-   npm run build
-   ```
+### Production Deployment
 
-## Docker Deployment
+1. **Clone the repository on your server:**
+```bash
+git clone <your-frontend-repo-url>
+cd hackathon25frontend
+```
 
-### Using Docker Compose
+2. **Set up environment variables:**
+```bash
+cp env.production .env.production
+# Edit .env.production with your production settings
+```
 
-1. **Build and run with Docker Compose**
-   ```bash
-   docker-compose up --build
-   ```
+3. **Deploy using the deployment script:**
+```bash
+chmod +x deploy.sh
+./deploy.sh
+```
 
-2. **Access the application**
-   - Frontend: http://localhost:3000
-   - Backend API: http://localhost:8000/api
+## 🔧 Configuration
 
-### Manual Docker Build
+### Environment Variables
 
-1. **Build the Docker image**
-   ```bash
-   docker build -t hackathon25frontend .
-   ```
-
-2. **Run the container**
-   ```bash
-   docker run -p 3000:3000 hackathon25frontend
-   ```
-
-## Production Deployment
-
-### Server Setup
-
-1. **Clone the repository on your server**
-   ```bash
-   git clone <repository-url>
-   cd hackathon25frontend
-   ```
-
-2. **Make the deployment script executable**
-   ```bash
-   chmod +x deploy.sh
-   ```
-
-3. **Run the deployment script**
-   ```bash
-   ./deploy.sh
-   ```
-
-### GitHub Actions Deployment
-
-The repository includes a GitHub Actions workflow that automatically deploys to your server when changes are pushed to the main branch.
-
-**Required Secrets:**
-- `HOST`: Your server's IP address
-- `USERNAME`: SSH username
-- `SSH_KEY`: Private SSH key for server access
-- `PORT`: SSH port (usually 22)
+Create `.env.production` file:
+```env
+NODE_ENV=production
+VITE_API_BASE_URL=http://localhost:8000
+```
 
 ### Nginx Configuration
 
-The application includes two nginx configurations:
+The application includes several nginx configurations:
 
-1. **`nginx.conf`**: For standalone frontend deployment
-2. **`nginx-reverse-proxy.conf`**: For reverse proxy setup with backend
+1. **`nginx.conf`** - Standalone frontend nginx config
+2. **`nginx-reverse-proxy.conf`** - Reverse proxy for both frontend and backend
 
-For production deployment with both frontend and backend:
+#### Setting up Reverse Proxy
 
+1. Copy the reverse proxy config:
 ```bash
-# Copy the reverse proxy configuration
-sudo cp nginx-reverse-proxy.conf /etc/nginx/nginx.conf
+sudo cp nginx-reverse-proxy.conf /etc/nginx/sites-available/hackathon25
+```
 
-# Test configuration
+2. Enable the site:
+```bash
+sudo ln -s /etc/nginx/sites-available/hackathon25 /etc/nginx/sites-enabled/
 sudo nginx -t
-
-# Reload nginx
 sudo systemctl reload nginx
 ```
 
-## API Configuration
-
-The frontend communicates with the backend using the private IP address since they're hosted on the same server. The API base URL is configured in `src/services/api.ts`.
-
-## Environment Variables
-
-Create a `.env` file with the following variables:
-
-```env
-VITE_API_BASE_URL=http://localhost:8000/api
-NODE_ENV=production
+3. Update your domain in the config file:
+```nginx
+server_name your-domain.com;  # Replace with your actual domain
 ```
 
-## Scripts
+## 🔄 CI/CD Pipeline
 
-- `npm run dev`: Start development server
-- `npm run build`: Build for production
-- `npm run preview`: Preview production build
-- `npm run test`: Run tests
-- `npm run lint`: Run ESLint
+### GitHub Actions
 
-## Project Structure
+The repository includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that:
+
+1. Builds the application
+2. Runs tests
+3. Deploys to your server via SSH
+
+### Required Secrets
+
+Set up these secrets in your GitHub repository:
+
+- `HOST`: Your server IP address
+- `USERNAME`: SSH username
+- `SSH_KEY`: Private SSH key
+- `PORT`: SSH port (usually 22)
+
+## 🌐 Network Architecture
+
+### Production Setup
+
+```
+Internet → Nginx Reverse Proxy → Frontend (port 3000) + Backend (port 8000)
+```
+
+### Communication Flow
+
+1. **Frontend → Backend**: Uses `localhost:8000` (private IP communication)
+2. **Public Access**: Through nginx reverse proxy with path-based routing:
+   - `/` → Frontend application
+   - `/api/*` → Backend API
+
+### Path-based Routing
+
+- **Frontend**: `https://your-domain.com/`
+- **Backend API**: `https://your-domain.com/api/`
+- **Health Checks**: 
+  - Frontend: `https://your-domain.com/health`
+  - Backend: `https://your-domain.com/api/health`
+
+## 📁 Project Structure
 
 ```
 hackathon25frontend/
@@ -163,46 +145,51 @@ hackathon25frontend/
 │   ├── services/      # API services
 │   ├── store/         # Redux store
 │   ├── types/         # TypeScript types
-│   └── theme/         # MUI theme configuration
-├── public/            # Static assets
+│   └── assets/        # Static assets
+├── public/            # Public assets
 ├── Dockerfile         # Docker configuration
-├── docker-compose.yml # Docker Compose configuration
-├── nginx.conf         # Nginx configuration
-└── deploy.sh          # Deployment script
+├── docker-compose.yml # Docker Compose setup
+├── nginx.conf         # Frontend nginx config
+├── nginx-reverse-proxy.conf # Reverse proxy config
+├── deploy.sh          # Deployment script
+└── .github/workflows/ # CI/CD workflows
 ```
 
-## Troubleshooting
+## 🔍 Monitoring & Health Checks
+
+### Health Check Endpoints
+
+- **Frontend**: `http://localhost:3000/health`
+- **Backend**: `http://localhost:8000/health`
+
+### Logs
+
+```bash
+# Frontend logs
+docker-compose logs frontend
+
+# Nginx logs
+docker exec hackathon25frontend tail -f /var/log/nginx/access.log
+docker exec hackathon25frontend tail -f /var/log/nginx/error.log
+```
+
+## 🛠️ Troubleshooting
 
 ### Common Issues
 
-1. **Port already in use**
-   ```bash
-   # Check what's using the port
-   lsof -i :3000
-   # Kill the process
-   kill -9 <PID>
-   ```
+1. **Build fails**: Ensure all dependencies are installed
+2. **API connection fails**: Check if backend is running on port 8000
+3. **Nginx errors**: Verify configuration syntax with `nginx -t`
 
-2. **Docker build fails**
-   ```bash
-   # Clean Docker cache
-   docker system prune -a
-   # Rebuild
-   docker-compose build --no-cache
-   ```
+### Performance Optimization
 
-3. **Nginx configuration errors**
-   ```bash
-   # Test nginx configuration
-   sudo nginx -t
-   # Check nginx logs
-   sudo tail -f /var/log/nginx/error.log
-   ```
+The application includes:
+- Code splitting and lazy loading
+- Optimized bundle splitting
+- Gzip compression
+- Static asset caching
+- Minified production builds
 
-## Support
-
-For issues and questions, please create an issue in the repository or contact the development team.
-
-## License
+## 📝 License
 
 This project is licensed under the MIT License. 
