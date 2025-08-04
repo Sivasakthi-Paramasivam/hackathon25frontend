@@ -27,7 +27,7 @@ const ProductListPage: React.FC = () => {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
 
-  const productsPerPage = 12;
+  const productsPerPage = 50;
   const totalPages = Math.ceil(products.length / productsPerPage);
   const startIndex = (currentPage - 1) * productsPerPage;
   const endIndex = startIndex + productsPerPage;
