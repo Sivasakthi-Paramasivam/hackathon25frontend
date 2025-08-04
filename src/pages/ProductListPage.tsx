@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Container,
@@ -28,10 +28,8 @@ const ProductListPage: React.FC = () => {
   const [searchParams] = useSearchParams();
 
   const productsPerPage = 50;
-  const totalPages = Math.ceil(products.length / productsPerPage);
-  const startIndex = (currentPage - 1) * productsPerPage;
-  const endIndex = startIndex + productsPerPage;
-  const currentProducts = products.slice(startIndex, endIndex);
+  const [totalProducts, setTotalProducts] = useState(0);
+  const totalPages = useMemo(() => Math.ceil(totalProducts / productsPerPage), [totalProducts, productsPerPage]);
 
 
  
@@ -51,8 +49,9 @@ const ProductListPage: React.FC = () => {
 
   const fetchProducts = async() => {
     const ProductService = new ApiService()
-    const result = await ProductService.getProducts()
+    const result = await ProductService.getProducts(currentPage, productsPerPage)
     setProducts(result.products)
+    setTotalProducts(result.pagination.total)
   }
 
   const handleSearch = async (query: string) => {
@@ -98,7 +97,7 @@ const ProductListPage: React.FC = () => {
         gap: 3,
         mb: 4
       }}>
-        {currentProducts.map((product) => (
+        {products.map((product) => (
           <Card
             key={product['Internal ID']}
             sx={{
